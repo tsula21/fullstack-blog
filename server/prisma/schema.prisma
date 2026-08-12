@@ -1,0 +1,30 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String   @db.VarChar(50)
+  email        String   @unique @db.VarChar(254)
+  passwordHash String
+  dateOfBirth  DateTime @db.Date
+  createdAt    DateTime @default(now())
+
+  posts        Post[]
+}
+
+model Post {
+  id        String   @id @default(uuid())
+  body      String   @db.VarChar(500)
+  createdAt DateTime @default(now())
+
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt(sort: Desc)])
+}
